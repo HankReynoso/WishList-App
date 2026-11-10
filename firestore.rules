@@ -55,6 +55,11 @@ service cloud.firestore {
           && !exists(guestPath(listId, request.auth.uid))
           && existsAfter(guestPath(listId, request.auth.uid)));
 
+      // Deleting the list orphans claims and guests: the owner cannot delete
+      // them by design, and isOwner/isJoinedGuest read this doc, so once it is
+      // gone nobody can read them.
+      allow delete: if isOwner(listId);
+
       match /items/{itemId} {
         allow read: if signedIn();
         allow create, update: if isOwner(listId) && validItem();
@@ -91,6 +96,10 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['listId'])
         && getAfter(listPath(request.resource.data.listId)).data.ownerId == request.auth.uid
         && getAfter(listPath(request.resource.data.listId)).data.code == code;
+      // get() sees the list as it was before the batch, so the code can be
+      // deleted in the same batch as the list.
+      allow delete: if signedIn() && !isAnon()
+        && get(listPath(resource.data.listId)).data.ownerId == request.auth.uid;
     }
   }
 }

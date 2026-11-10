@@ -6,7 +6,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { collection, deleteDoc, doc, getDoc, getDocs, increment, setDoc, writeBatch } from 'firebase/firestore';
+import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, increment, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 
 const L = 'list1';
 let env: RulesTestEnvironment;
@@ -152,5 +152,79 @@ describe('lists, items, codes', () => {
   });
   it('a guest cannot create a list', async () => {
     await assertFails(setDoc(doc(guest('g1'), 'lists', 'x'), { title: 'T', ownerId: 'g1', code: 'QQQ222', guestCount: 0 }));
+  });
+});
+
+const otherOwner = () =>
+  env.authenticatedContext('owner2', { firebase: { sign_in_provider: 'password' } }).firestore();
+
+describe('owner edits and deletes items', () => {
+  it('owner edits an item name and links', async () => {
+    await assertSucceeds(
+      setDoc(doc(owner(), 'lists', L, 'items', 'i1'), { name: 'Better headphones', links: ['https://c.example', 'https://d.example'] }),
+    );
+  });
+  it('owner cannot save an invalid edit', async () => {
+    await assertFails(setDoc(doc(owner(), 'lists', L, 'items', 'i1'), { name: '', links: ['https://c.example'] }));
+    await assertFails(setDoc(doc(owner(), 'lists', L, 'items', 'i1'), { name: 'x', links: [] }));
+  });
+  it('another owner and guests cannot edit or delete items', async () => {
+    await assertFails(setDoc(doc(otherOwner(), 'lists', L, 'items', 'i1'), { name: 'x', links: ['https://x.example'] }));
+    await assertFails(deleteDoc(doc(otherOwner(), 'lists', L, 'items', 'i1')));
+    await assertFails(deleteDoc(doc(guest('g1'), 'lists', L, 'items', 'i1')));
+  });
+  it('owner deletes a claimed item and still cannot read its orphan claim', async () => {
+    await assertSucceeds(deleteDoc(doc(owner(), 'lists', L, 'items', 'i1')));
+    await assertFails(getDoc(doc(owner(), 'lists', L, 'claims', 'i1')));
+  });
+  it('a guest can still read and release the orphan claim', async () => {
+    await assertSucceeds(deleteDoc(doc(owner(), 'lists', L, 'items', 'i1')));
+    await assertSucceeds(getDoc(doc(guest('g1'), 'lists', L, 'claims', 'i1')));
+    await assertSucceeds(deleteDoc(doc(guest('g1'), 'lists', L, 'claims', 'i1')));
+  });
+});
+
+describe('owner edits and deletes lists', () => {
+  it('owner retitles and redates, and clears the date', async () => {
+    await assertSucceeds(updateDoc(doc(owner(), 'lists', L), { title: 'New', date: '2026-12-01' }));
+    await assertSucceeds(updateDoc(doc(owner(), 'lists', L), { date: deleteField() }));
+  });
+  it('owner cannot change code, owner or guest count', async () => {
+    await assertFails(updateDoc(doc(owner(), 'lists', L), { code: 'ZZZ999' }));
+    await assertFails(updateDoc(doc(owner(), 'lists', L), { guestCount: 0 }));
+  });
+  it('only the owner can delete a list', async () => {
+    await assertFails(deleteDoc(doc(otherOwner(), 'lists', L)));
+    await assertFails(deleteDoc(doc(guest('g1'), 'lists', L)));
+    await assertSucceeds(deleteDoc(doc(owner(), 'lists', L)));
+  });
+  it('owner deletes items, code and list in batches', async () => {
+    const db = owner();
+    const items = writeBatch(db);
+    items.delete(doc(db, 'lists', L, 'items', 'i1'));
+    items.delete(doc(db, 'lists', L, 'items', 'i2'));
+    await assertSucceeds(items.commit());
+    const rest = writeBatch(db);
+    rest.delete(doc(db, 'codes', 'ABC234'));
+    rest.delete(doc(db, 'lists', L));
+    await assertSucceeds(rest.commit());
+  });
+  it('code delete and list delete succeed in one batch', async () => {
+    const db = owner();
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'codes', 'ABC234'));
+    batch.delete(doc(db, 'lists', L));
+    await assertSucceeds(batch.commit());
+  });
+  it('only the list owner can delete its code', async () => {
+    await assertFails(deleteDoc(doc(otherOwner(), 'codes', 'ABC234')));
+    await assertFails(deleteDoc(doc(guest('g1'), 'codes', 'ABC234')));
+    await assertSucceeds(deleteDoc(doc(owner(), 'codes', 'ABC234')));
+  });
+  it('after list deletion guests can no longer read claims', async () => {
+    await assertSucceeds(getDoc(doc(guest('g1'), 'lists', L, 'claims', 'i1')));
+    await env.withSecurityRulesDisabled((ctx) => deleteDoc(doc(ctx.firestore(), 'lists', L)));
+    await assertFails(getDoc(doc(guest('g1'), 'lists', L, 'claims', 'i1')));
+    await assertFails(deleteDoc(doc(guest('g1'), 'lists', L, 'claims', 'i1')));
   });
 });
