@@ -23,6 +23,13 @@ Enforced in `firestore.rules`, not in the app:
 - A claim doc id equals the item id and claims are create-only, so a second claim on the same item fails.
 - A guest can delete a claim only when its `guestId` is their uid.
 
+## Deleting items and lists
+
+The owner can edit and delete items, and edit or delete a list. The owner cannot read or delete `claims` or `guests`, so deletes leave data behind by design:
+
+- Deleting an item leaves its claim doc. It is invisible to the owner. Guests can still read it (and release it), but the guest screen only renders claims for items that exist, so it does nothing. Item ids are auto-generated, so the orphan never attaches to a new item.
+- Deleting a list deletes its items, then its `codes/{code}` doc and the list doc together. Its `claims` and `guests` docs stay in Firestore but nobody can read them: every claims and guests rule resolves the list doc first, and it no longer exists. Clearing them would need an admin tool or a Cloud Function.
+
 Joining as a guest signs out an owner session on that device, since an owner session cannot act as a guest.
 
 ## Tests
