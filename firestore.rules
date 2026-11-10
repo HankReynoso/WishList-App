@@ -1,0 +1,105 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    // Owners sign in with email/password, guests are anonymous. Keeping the
+    // two disjoint is what lets "owner" and "guest" rules never overlap.
+    function isAnon() {
+      return signedIn() && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+    function listPath(listId) {
+      return /databases/$(db)/documents/lists/$(listId);
+    }
+    function guestPath(listId, uid) {
+      return /databases/$(db)/documents/lists/$(listId)/guests/$(uid);
+    }
+    function isOwner(listId) {
+      return signedIn() && get(listPath(listId)).data.ownerId == request.auth.uid;
+    }
+    function isJoinedGuest(listId) {
+      return isAnon()
+        && exists(guestPath(listId, request.auth.uid))
+        && !isOwner(listId);
+    }
+    function validItem() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'links'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 200
+        && d.links is list && d.links.size() > 0 && d.links.size() <= 20;
+    }
+
+    match /lists/{listId} {
+      allow get: if signedIn();
+      allow list: if signedIn() && resource.data.ownerId == request.auth.uid;
+
+      allow create: if signedIn() && !isAnon()
+        && request.resource.data.keys().hasOnly(['title', 'date', 'ownerId', 'code', 'guestCount'])
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.guestCount == 0
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 100;
+
+      // The owner may only retitle/redate. A guest may only bump guestCount by
+      // exactly one, in the same batch that creates their own guest doc, so the
+      // owner learns the count and nothing else.
+      allow update: if
+        (isOwner(listId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title', 'date']))
+        ||
+        (isAnon()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['guestCount'])
+          && request.resource.data.guestCount == resource.data.guestCount + 1
+          && !exists(guestPath(listId, request.auth.uid))
+          && existsAfter(guestPath(listId, request.auth.uid)));
+
+      // Deleting the list orphans claims and guests: the owner cannot delete
+      // them by design, and isOwner/isJoinedGuest read this doc, so once it is
+      // gone nobody can read them.
+      allow delete: if isOwner(listId);
+
+      match /items/{itemId} {
+        allow read: if signedIn();
+        allow create, update: if isOwner(listId) && validItem();
+        allow delete: if isOwner(listId);
+      }
+
+      match /guests/{guestId} {
+        allow get: if signedIn() && request.auth.uid == guestId;
+        allow create: if isAnon()
+          && request.auth.uid == guestId
+          && !isOwner(listId)
+          && request.resource.data.keys().hasOnly(['name'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 40
+          && getAfter(listPath(listId)).data.guestCount == get(listPath(listId)).data.guestCount + 1;
+      }
+
+      // No rule here matches the owner: isJoinedGuest excludes them. A claim
+      // can only be created, never updated, so create fails if one exists.
+      match /claims/{itemId} {
+        allow read: if isJoinedGuest(listId);
+        allow create: if isJoinedGuest(listId)
+          && request.resource.data.keys().hasOnly(['guestId', 'guestName'])
+          && request.resource.data.guestId == request.auth.uid
+          && request.resource.data.guestName == get(guestPath(listId, request.auth.uid)).data.name
+          && exists(/databases/$(db)/documents/lists/$(listId)/items/$(itemId));
+        allow delete: if isJoinedGuest(listId) && resource.data.guestId == request.auth.uid;
+      }
+    }
+
+    match /codes/{code} {
+      allow get: if signedIn();
+      allow create: if signedIn() && !isAnon()
+        && request.resource.data.keys().hasOnly(['listId'])
+        && getAfter(listPath(request.resource.data.listId)).data.ownerId == request.auth.uid
+        && getAfter(listPath(request.resource.data.listId)).data.code == code;
+      // get() sees the list as it was before the batch, so the code can be
+      // deleted in the same batch as the list.
+      allow delete: if signedIn() && !isAnon()
+        && get(listPath(resource.data.listId)).data.ownerId == request.auth.uid;
+    }
+  }
+}
