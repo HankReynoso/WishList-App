@@ -1,20 +1,43 @@
 {
   "expo": {
-    "name": "Wishlist",
-    "slug": "wishlist",
+    "name": "Gift-Wrapped",
+    "slug": "gift-wrapped",
     "scheme": "wishlist",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.example.wishlist"
+      "bundleIdentifier": "com.hankreynoso.giftwrapped",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "com.example.wishlist"
+      "package": "com.hankreynoso.giftwrapped",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-foreground.png",
+        "backgroundImage": "./assets/adaptive-background.png",
+        "monochromeImage": "./assets/adaptive-monochrome.png"
+      }
     },
     "plugins": [
       "expo-router",
-      "@react-native-community/datetimepicker"
-    ]
+      "@react-native-community/datetimepicker",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "imageWidth": 200,
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "image": "./assets/splash-dark.png",
+            "backgroundColor": "#0b0d12"
+          }
+        }
+      ]
+    ],
+    "icon": "./assets/icon.png"
   }
 }

@@ -15,6 +15,9 @@ export type Theme = {
   mineBg: string;
   mineText: string;
   inputBg: string;
+  danger: string;
+  onDanger: string;
+  dangerBg: string;
 };
 
 export const themes = {
@@ -33,6 +36,9 @@ export const themes = {
     mineBg: '#eef0ff',
     mineText: '#4f46e5',
     inputBg: '#f3f4f6',
+    danger: '#dc2626',
+    onDanger: '#ffffff',
+    dangerBg: '#fef2f2',
   },
   dark: {
     bg: '#0b0d12',
@@ -49,6 +55,9 @@ export const themes = {
     mineBg: '#2dd4bf22',
     mineText: '#2dd4bf',
     inputBg: '#1f2535',
+    danger: '#f87171',
+    onDanger: '#2b0b0b',
+    dangerBg: '#f8717122',
   },
 } satisfies Record<'light' | 'dark', Theme>;
 

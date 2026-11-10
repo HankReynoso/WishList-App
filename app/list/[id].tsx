@@ -93,7 +93,7 @@ export default function OwnerList() {
 
   const invite = () => {
     const url = Linking.createURL('join', { queryParams: { code: list.code } });
-    return Share.share({ message: `Join my wishlist "${list.title}". Code: ${list.code}\n${url}` });
+    return Share.share({ message: `Join my Gift-Wrapped list "${list.title}". Code: ${list.code}\n${url}` });
   };
 
   return (
@@ -124,7 +124,7 @@ export default function OwnerList() {
           ))}
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <Chip label="Edit" onPress={() => startEdit(i)} />
-            <Chip label="Delete" onPress={() => confirmDeleteItem(i)} />
+            <Chip danger label="Delete" onPress={() => confirmDeleteItem(i)} />
           </View>
         </Card>
       ))}
@@ -136,7 +136,7 @@ export default function OwnerList() {
       {editingId ? <Button label="Cancel" onPress={resetItemForm} /> : null}
       <Button label="Share invite" onPress={invite} />
       <Button label="Edit list" onPress={startListEdit} />
-      <Button label="Delete list" onPress={confirmDeleteList} />
+      <Button danger label="Delete list" onPress={confirmDeleteList} />
     </Screen>
   );
 }
