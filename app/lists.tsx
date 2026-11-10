@@ -45,6 +45,7 @@ export default function Lists() {
       <DateField value={date} onChange={setDate} />
       {error ? <T kind="sub">{error}</T> : null}
       <Button label="Create list" onPress={add} />
+      <Button label="Settings" onPress={() => router.push('/settings')} />
       <Button
         label="Sign out"
         onPress={async () => {

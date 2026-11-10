@@ -17,6 +17,7 @@ export default function Root() {
       >
         <Stack.Screen name="index" options={{ title: 'Gift-Wrapped' }} />
         <Stack.Screen name="lists" options={{ title: 'My lists', headerBackVisible: false }} />
+        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
         <Stack.Screen name="list/[id]" options={{ title: 'List' }} />
         <Stack.Screen name="joined" options={{ title: 'My joined lists' }} />
         <Stack.Screen name="join" options={{ title: 'Join a list' }} />
