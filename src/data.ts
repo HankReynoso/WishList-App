@@ -1,12 +1,15 @@
 import {
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
+  getDocs,
   increment,
   onSnapshot,
   query,
   setDoc,
+  updateDoc,
   where,
   writeBatch,
 } from 'firebase/firestore';
@@ -39,6 +42,35 @@ export async function createList(ownerId: string, title: string, date?: string) 
 
 export const addItem = (listId: string, name: string, links: string[]) =>
   setDoc(doc(collection(db, 'lists', listId, 'items')), { name, links } satisfies Item);
+
+export const updateItem = (listId: string, itemId: string, name: string, links: string[]) =>
+  setDoc(doc(db, 'lists', listId, 'items', itemId), { name, links } satisfies Item);
+
+// The claim doc is left behind on purpose: the owner cannot read or delete
+// claims. Guests only render claims for items that exist, so it is inert.
+export const deleteItem = (listId: string, itemId: string) => deleteDoc(doc(db, 'lists', listId, 'items', itemId));
+
+export const updateList = (listId: string, title: string, date?: string) =>
+  updateDoc(doc(db, 'lists', listId), { title, date: date ?? deleteField() });
+
+const BATCH_LIMIT = 400;
+
+// Items go first, in chunks under the 500-write batch cap. The code and list
+// go last in one batch, so a failure midway leaves a list that still exists
+// and can be deleted again. Claims and guests are unreachable once the list
+// doc is gone and cannot be deleted by the owner.
+export async function deleteList(listId: string, code: string) {
+  const items = await getDocs(collection(db, 'lists', listId, 'items'));
+  for (let i = 0; i < items.docs.length; i += BATCH_LIMIT) {
+    const batch = writeBatch(db);
+    items.docs.slice(i, i + BATCH_LIMIT).forEach((d) => batch.delete(d.ref));
+    await batch.commit();
+  }
+  const last = writeBatch(db);
+  last.delete(doc(db, 'codes', code));
+  last.delete(doc(db, 'lists', listId));
+  await last.commit();
+}
 
 export async function joinList(code: string, name: string): Promise<string> {
   const user = await ensureGuest();
