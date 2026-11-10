@@ -38,6 +38,16 @@
         }
       ]
     ],
-    "icon": "./assets/icon.png"
+    "icon": "./assets/icon.png",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "d8f44bc0-78ba-4d4a-8040-00df2ebc6ea3"
+      }
+    }
   }
 }
