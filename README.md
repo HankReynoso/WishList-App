@@ -1,4 +1,4 @@
-# Wishlist
+# Gift-Wrapped
 
 An owner builds wishlists and invites guests. Guests claim items so nobody buys duplicates. The owner sees only how many guests joined, never who claimed what.
 

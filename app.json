@@ -1,16 +1,21 @@
 {
   "expo": {
-    "name": "Wishlist",
-    "slug": "wishlist",
+    "name": "Gift-Wrapped",
+    "slug": "gift-wrapped",
     "scheme": "wishlist",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.example.wishlist"
+      "bundleIdentifier": "com.hankreynoso.giftwrapped",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "com.example.wishlist"
+      "package": "com.hankreynoso.giftwrapped",
+      "versionCode": 1
     },
     "plugins": [
       "expo-router",

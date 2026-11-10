@@ -93,7 +93,7 @@ export default function OwnerList() {
 
   const invite = () => {
     const url = Linking.createURL('join', { queryParams: { code: list.code } });
-    return Share.share({ message: `Join my wishlist "${list.title}". Code: ${list.code}\n${url}` });
+    return Share.share({ message: `Join my Gift-Wrapped list "${list.title}". Code: ${list.code}\n${url}` });
   };
 
   return (

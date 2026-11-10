@@ -15,11 +15,11 @@ export default function Root() {
           contentStyle: { backgroundColor: t.bg },
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'Wishlist' }} />
+        <Stack.Screen name="index" options={{ title: 'Gift-Wrapped' }} />
         <Stack.Screen name="lists" options={{ title: 'My lists', headerBackVisible: false }} />
         <Stack.Screen name="list/[id]" options={{ title: 'List' }} />
         <Stack.Screen name="join" options={{ title: 'Join a list' }} />
-        <Stack.Screen name="guest/[id]" options={{ title: 'Wishlist', headerBackVisible: false }} />
+        <Stack.Screen name="guest/[id]" options={{ title: 'Gift-Wrapped', headerBackVisible: false }} />
       </Stack>
     </>
   );

@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
     <Screen>
-      <T kind="title">Wishlist</T>
+      <T kind="title">Gift-Wrapped</T>
       <T kind="sub">Owners sign in to build lists. Guests join with an invite code.</T>
       <Field placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} />
       <Field placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
