@@ -1,5 +1,7 @@
-import type { ReactNode } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View, type TextInputProps } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useState, type ReactNode } from 'react';
+import { Platform, Pressable, ScrollView, Text, TextInput, useColorScheme, View, type TextInputProps } from 'react-native';
+import { fromDateString, toDateString } from './format';
 import { useTheme } from './theme';
 
 export function Screen({ children }: { children: ReactNode }) {
@@ -71,5 +73,45 @@ export function Field(props: TextInputProps) {
       {...props}
       style={[{ backgroundColor: t.inputBg, color: t.text, borderRadius: t.cardRadius, padding: 12, fontSize: 15 }, props.style]}
     />
+  );
+}
+
+export function DateField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const t = useTheme();
+  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={{ gap: 8 }}>
+      <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+        <Pressable
+          onPress={() => setOpen((o) => !o)}
+          style={{ flex: 1, backgroundColor: t.inputBg, borderRadius: t.cardRadius, padding: 12 }}
+        >
+          <Text style={{ color: value ? t.text : t.sub, fontSize: 15 }}>{value || 'Date, optional'}</Text>
+        </Pressable>
+        {value ? (
+          <Chip
+            label="Clear"
+            onPress={() => {
+              setOpen(false);
+              onChange('');
+            }}
+          />
+        ) : null}
+      </View>
+      {open ? (
+        <DateTimePicker
+          mode="date"
+          display={Platform.OS === 'ios' ? 'inline' : 'default'}
+          themeVariant={scheme}
+          accentColor={t.accent}
+          value={value ? fromDateString(value) : new Date()}
+          onChange={(e, d) => {
+            if (Platform.OS !== 'ios') setOpen(false);
+            if (e.type === 'set' && d) onChange(toDateString(d));
+          }}
+        />
+      ) : null}
+    </View>
   );
 }

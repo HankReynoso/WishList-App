@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { Pressable } from 'react-native';
 import { ownerSignOut, useUser } from '../src/auth';
 import { createList, useCollectionData } from '../src/data';
-import { countdown, isDate } from '../src/format';
+import { countdown } from '../src/format';
 import type { ListDoc } from '../src/types';
-import { Button, Card, Field, Screen, T } from '../src/ui';
+import { Button, Card, DateField, Field, Screen, T } from '../src/ui';
 
 export default function Lists() {
   const { user, ready } = useUser();
@@ -19,7 +19,6 @@ export default function Lists() {
 
   const add = async () => {
     if (!title.trim()) return setError('Give the list a title.');
-    if (date && !isDate(date)) return setError('Use the date format YYYY-MM-DD.');
     try {
       const id = await createList(user.uid, title.trim(), date || undefined);
       setTitle('');
@@ -43,7 +42,7 @@ export default function Lists() {
       ))}
       <T kind="name">New list</T>
       <Field placeholder="Title" autoCapitalize="sentences" value={title} onChangeText={setTitle} />
-      <Field placeholder="Date, optional (YYYY-MM-DD)" value={date} onChangeText={setDate} />
+      <DateField value={date} onChange={setDate} />
       {error ? <T kind="sub">{error}</T> : null}
       <Button label="Create list" onPress={add} />
       <Button

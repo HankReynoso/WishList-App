@@ -1,6 +1,9 @@
-const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const pad = (n: number) => String(n).padStart(2, '0');
 
-export const isDate = (s: string) => DATE.test(s) && !Number.isNaN(Date.parse(s));
+// Local calendar date, never toISOString, which shifts the day across time zones.
+export const toDateString = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+export const fromDateString = (s: string) => new Date(`${s}T00:00:00`);
 
 export function countdown(date: string): string {
   const today = new Date();
