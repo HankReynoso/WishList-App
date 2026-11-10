@@ -6,8 +6,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "ios": { "bundleIdentifier": "com.example.wishlist" },
-    "android": { "package": "com.example.wishlist" },
-    "plugins": ["expo-router"]
+    "ios": {
+      "bundleIdentifier": "com.example.wishlist"
+    },
+    "android": {
+      "package": "com.example.wishlist"
+    },
+    "plugins": [
+      "expo-router",
+      "@react-native-community/datetimepicker"
+    ]
   }
 }
