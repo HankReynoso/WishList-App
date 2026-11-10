@@ -48,24 +48,29 @@ export function Card({ children }: { children: ReactNode }) {
   );
 }
 
-export function Button({ label, onPress }: { label: string; onPress: () => void }) {
+export function Button({ label, onPress, danger }: { label: string; onPress: () => void; danger?: boolean }) {
   const t = useTheme();
   return (
-    <Pressable onPress={onPress} style={{ backgroundColor: t.accent, padding: 14, borderRadius: t.cardRadius, alignItems: 'center' }}>
-      <Text style={{ color: t.onAccent, fontWeight: '600', fontSize: 15 }}>{label}</Text>
+    <Pressable
+      onPress={onPress}
+      style={{ backgroundColor: danger ? t.danger : t.accent, padding: 14, borderRadius: t.cardRadius, alignItems: 'center' }}
+    >
+      <Text style={{ color: danger ? t.onDanger : t.onAccent, fontWeight: '600', fontSize: 15 }}>{label}</Text>
     </Pressable>
   );
 }
 
-export function Chip({ label, mine, onPress }: { label: string; mine?: boolean; onPress?: () => void }) {
+export function Chip({ label, mine, danger, onPress }: { label: string; mine?: boolean; danger?: boolean; onPress?: () => void }) {
   const t = useTheme();
+  const bg = danger ? t.dangerBg : mine ? t.mineBg : t.chipBg;
+  const fg = danger ? t.danger : mine ? t.mineText : t.chipText;
   return (
     <Pressable
       disabled={!onPress}
       onPress={onPress}
-      style={{ alignSelf: 'flex-start', backgroundColor: mine ? t.mineBg : t.chipBg, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
+      style={{ alignSelf: 'flex-start', backgroundColor: bg, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 }}
     >
-      <Text style={{ color: mine ? t.mineText : t.chipText, fontSize: 13 }}>{label}</Text>
+      <Text style={{ color: fg, fontSize: 13 }}>{label}</Text>
     </Pressable>
   );
 }
