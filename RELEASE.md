@@ -10,7 +10,7 @@ Everything below needs your accounts and cannot be done from the repo. `eas.json
 4. Create `.env` from `.env.example`. For cloud builds, add the four `EXPO_PUBLIC_FIREBASE_*` values as EAS environment variables (`npx eas-cli env:create`) because `.env` is not uploaded.
 5. Deploy the Firestore rules yourself: `npx firebase deploy --only firestore:rules --project wishlist-app-ca27d`.
 6. Enable Email/Password and Anonymous sign-in in the Firebase console.
-7. Publish `docs/` on GitHub Pages (repo Settings, Pages, deploy from branch, `/docs` folder). Replace every `SUPPORT_EMAIL_PLACEHOLDER` in `docs/index.html` and `docs/privacy.html` with a real address first. The privacy URL is `https://<user>.github.io/<repo>/privacy.html` and the support URL is the same without the file name.
+7. Publish `docs/` on GitHub Pages (repo Settings, Pages, deploy from branch, `/docs` folder). The support email is already set in both pages. The privacy URL is `https://<user>.github.io/<repo>/privacy.html` and the support URL is the same without the file name.
 
 ## iOS
 
