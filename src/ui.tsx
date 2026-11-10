@@ -7,7 +7,13 @@ import { useTheme } from './theme';
 export function Screen({ children }: { children: ReactNode }) {
   const t = useTheme();
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: t.bg }} contentContainerStyle={{ padding: 16, gap: 10 }} keyboardShouldPersistTaps="handled">
+    <ScrollView
+      style={{ flex: 1, backgroundColor: t.bg }}
+      contentContainerStyle={{ padding: 16, paddingBottom: 120, gap: 10 }}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+      automaticallyAdjustKeyboardInsets
+    >
       {children}
     </ScrollView>
   );
@@ -70,6 +76,7 @@ export function Field(props: TextInputProps) {
     <TextInput
       placeholderTextColor={t.sub}
       autoCapitalize="none"
+      returnKeyType="done"
       {...props}
       style={[{ backgroundColor: t.inputBg, color: t.text, borderRadius: t.cardRadius, padding: 12, fontSize: 15 }, props.style]}
     />
