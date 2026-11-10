@@ -168,6 +168,33 @@ describe('owner edits and deletes items', () => {
     await assertFails(setDoc(doc(owner(), 'lists', L, 'items', 'i1'), { name: '', links: ['https://c.example'] }));
     await assertFails(setDoc(doc(owner(), 'lists', L, 'items', 'i1'), { name: 'x', links: [] }));
   });
+  it('owner saves an item with an https image', async () => {
+    await assertSucceeds(
+      setDoc(doc(owner(), 'lists', L, 'items', 'i1'), {
+        name: 'Headphones',
+        links: ['https://a.example'],
+        image: 'https://cdn.a.example/headphones.jpg',
+      }),
+    );
+  });
+  it('owner cannot save a non-https, empty, oversize or non-string image', async () => {
+    const save = (image: unknown) =>
+      setDoc(doc(owner(), 'lists', L, 'items', 'i1'), { name: 'Headphones', links: ['https://a.example'], image });
+    await assertFails(save('http://cdn.a.example/headphones.jpg'));
+    await assertFails(save('javascript:alert(1)'));
+    await assertFails(save('https://'));
+    await assertFails(save(`https://cdn.a.example/${'x'.repeat(2048)}`));
+    await assertFails(save(42));
+  });
+  it('guests cannot write items with an image', async () => {
+    await assertFails(
+      setDoc(doc(guest('g1'), 'lists', L, 'items', 'i3'), {
+        name: 'x',
+        links: ['https://x.example'],
+        image: 'https://cdn.x.example/x.jpg',
+      }),
+    );
+  });
   it('another owner and guests cannot edit or delete items', async () => {
     await assertFails(setDoc(doc(otherOwner(), 'lists', L, 'items', 'i1'), { name: 'x', links: ['https://x.example'] }));
     await assertFails(deleteDoc(doc(otherOwner(), 'lists', L, 'items', 'i1')));
