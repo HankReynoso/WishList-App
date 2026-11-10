@@ -36,6 +36,7 @@ export default function Home() {
       <Button label={create ? 'Create owner account' : 'Sign in'} onPress={submit} />
       <Button label={create ? 'I already have an account' : 'New owner? Create an account'} onPress={() => setCreate(!create)} />
       <Button label="Join with a code" onPress={() => router.push('/join')} />
+      <Button label="My joined lists" onPress={() => router.push('/joined')} />
     </Screen>
   );
 }

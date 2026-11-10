@@ -16,7 +16,8 @@ import {
 import { useEffect, useState } from 'react';
 import { ensureGuest } from './auth';
 import { db } from './firebase';
-import type { Guest, Item, WithId } from './types';
+import { rememberJoined } from './joined';
+import type { Guest, Item, ListDoc, WithId } from './types';
 
 // No 0/O/1/I so a code read aloud or typed from a screenshot is hard to get wrong.
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -78,11 +79,18 @@ export async function joinList(code: string, name: string): Promise<string> {
   if (!found.exists()) throw new Error('No list matches that code.');
   const listId = (found.data() as { listId: string }).listId;
   const guestRef = doc(db, 'lists', listId, 'guests', user.uid);
-  if ((await getDoc(guestRef)).exists()) return listId;
-  const batch = writeBatch(db);
-  batch.set(guestRef, { name } satisfies Guest);
-  batch.update(doc(db, 'lists', listId), { guestCount: increment(1) });
-  await batch.commit();
+  const existing = await getDoc(guestRef);
+  let guestName = name;
+  if (existing.exists()) {
+    guestName = (existing.data() as Guest).name;
+  } else {
+    const batch = writeBatch(db);
+    batch.set(guestRef, { name } satisfies Guest);
+    batch.update(doc(db, 'lists', listId), { guestCount: increment(1) });
+    await batch.commit();
+  }
+  const list = await getDoc(doc(db, 'lists', listId));
+  await rememberJoined({ listId, title: (list.data() as ListDoc).title, name: guestName }).catch(() => {});
   return listId;
 }
 
