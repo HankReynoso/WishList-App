@@ -22,6 +22,7 @@ export default function Root() {
           headerStyle: { backgroundColor: t.bg },
           headerTintColor: t.text,
           headerShadowVisible: false,
+          headerTitleAlign: 'center',
           contentStyle: { backgroundColor: t.bg },
         }}
       >
