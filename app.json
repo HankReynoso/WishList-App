@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Wishlist",
+    "slug": "wishlist",
+    "scheme": "wishlist",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": { "bundleIdentifier": "com.example.wishlist" },
+    "android": { "package": "com.example.wishlist" },
+    "plugins": ["expo-router"],
+    "experiments": { "typedRoutes": true }
+  }
+}
