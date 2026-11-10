@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInAnonymously,
   signInWithEmailAndPassword,
   signOut,
@@ -17,6 +18,13 @@ export function useUser() {
 
 export const ownerSignIn = (email: string, password: string, create: boolean) =>
   (create ? createUserWithEmailAndPassword : signInWithEmailAndPassword)(auth, email, password);
+
+// Firebase can answer auth/user-not-found. Swallowing it keeps the caller's
+// message identical for known and unknown emails.
+export const sendReset = (email: string) =>
+  sendPasswordResetEmail(auth, email).catch((e: { code?: string }) => {
+    if (e.code !== 'auth/user-not-found') throw e;
+  });
 
 export const ownerSignOut = () => signOut(auth);
 
