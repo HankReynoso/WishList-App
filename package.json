@@ -8,13 +8,18 @@
     "ios": "expo start --ios",
     "android": "expo start --android",
     "typecheck": "tsc --noEmit",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-wishlist \"vitest run\""
+    "test:rules": "firebase emulators:exec --only firestore --project demo-wishlist \"vitest run tests/rules.test.ts\"",
+    "test:unit": "vitest run tests/preview.test.ts tests/palette.test.ts"
   },
   "dependencies": {
+    "@expo-google-fonts/dm-sans": "^0.4.2",
+    "@expo-google-fonts/fraunces": "^0.4.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "9.2.1",
     "expo": "^58.0.0",
     "expo-constants": "~58.0.15",
+    "expo-font": "~58.0.11",
+    "expo-image": "~58.0.18",
     "expo-linking": "~58.0.16",
     "expo-router": "~58.0.30",
     "expo-splash-screen": "~58.0.13",
@@ -24,7 +29,8 @@
     "react-dom": "^19.3.0",
     "react-native": "0.88.1",
     "react-native-safe-area-context": "~5.11.1",
-    "react-native-screens": "~4.30.1"
+    "react-native-screens": "~4.30.1",
+    "react-native-svg": "15.16.0"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.0",

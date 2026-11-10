@@ -41,11 +41,13 @@ export async function createList(ownerId: string, title: string, date?: string) 
   throw new Error('Could not create the list. Try again.');
 }
 
-export const addItem = (listId: string, name: string, links: string[]) =>
-  setDoc(doc(collection(db, 'lists', listId, 'items')), { name, links } satisfies Item);
+// Firestore rejects undefined fields, so an item without an image omits the key.
+const itemDoc = ({ name, links, image }: Item): Item => ({ name, links, ...(image ? { image } : {}) });
 
-export const updateItem = (listId: string, itemId: string, name: string, links: string[]) =>
-  setDoc(doc(db, 'lists', listId, 'items', itemId), { name, links } satisfies Item);
+export const addItem = (listId: string, item: Item) => setDoc(doc(collection(db, 'lists', listId, 'items')), itemDoc(item));
+
+export const updateItem = (listId: string, itemId: string, item: Item) =>
+  setDoc(doc(db, 'lists', listId, 'items', itemId), itemDoc(item));
 
 // The claim doc is left behind on purpose: the owner cannot read or delete
 // claims. Guests only render claims for items that exist, so it is inert.
