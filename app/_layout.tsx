@@ -11,6 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Pressable, Text } from 'react-native';
 import { fonts, useTheme } from '../src/theme';
+import { headerSide } from '../src/ui';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -59,9 +60,9 @@ export default function Root() {
         <Stack.Screen name="wish" options={{ presentation: 'modal' }} />
         <Stack.Screen
           name="join"
-          options={({ navigation }) => (navigation.canGoBack() ? {} : { headerLeft: () => <HomeButton /> })}
+          options={({ navigation }) => (navigation.canGoBack() ? {} : headerSide('left', <HomeButton />))}
         />
-        <Stack.Screen name="guest/[id]" options={{ headerBackVisible: false, headerLeft: () => <HomeButton /> }} />
+        <Stack.Screen name="guest/[id]" options={{ headerBackVisible: false, ...headerSide('left', <HomeButton />) }} />
       </Stack>
     </>
   );

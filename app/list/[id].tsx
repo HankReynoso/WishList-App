@@ -7,7 +7,7 @@ import { daysUntil, fromDateString } from '../../src/format';
 import { PencilIcon } from '../../src/icons';
 import { fonts, useTheme } from '../../src/theme';
 import type { Item, ListDoc } from '../../src/types';
-import { Button, Card, DateField, Field, IconButton, ItemImage, LinkDomains, Loading, Screen, T } from '../../src/ui';
+import { Button, Card, DateField, Field, headerSide, IconButton, ItemImage, LinkDomains, Loading, Screen, T } from '../../src/ui';
 
 function Stat({ value, label }: { value: string; label: string }) {
   const t = useTheme();
@@ -92,7 +92,7 @@ export default function OwnerList() {
 
   return (
     <Screen footer={<Button label="Add a wish" onPress={() => router.push({ pathname: '/wish', params: { list: id } })} />}>
-      <Stack.Screen options={{ headerRight: () => <Button small label="Invite" onPress={invite} /> }} />
+      <Stack.Screen options={headerSide('right', <Button small label="Invite" onPress={invite} />)} />
       {editingList ? (
         <Card>
           <T kind="name">Edit list</T>

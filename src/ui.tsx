@@ -1,7 +1,7 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Image } from 'expo-image';
 import * as Linking from 'expo-linking';
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactElement, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -292,6 +292,15 @@ export function LinkDomains({ links }: { links: string[] }) {
       ))}
     </View>
   );
+}
+
+// iOS 26 wraps header items in a shared glass capsule, which washes out our
+// own pills. The items API lets us opt out; headerLeft/Right serve Android.
+export function headerSide(side: 'left' | 'right', element: ReactElement) {
+  const items = () => [{ type: 'custom' as const, element, hidesSharedBackground: true }];
+  return side === 'left'
+    ? { headerLeft: () => element, unstable_headerLeftItems: items }
+    : { headerRight: () => element, unstable_headerRightItems: items };
 }
 
 export function Loading() {

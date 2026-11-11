@@ -5,7 +5,7 @@ import { addItem, deleteItem, updateItem, useDocData } from '../src/data';
 import { parseLinks } from '../src/format';
 import { fetchPreviewImage } from '../src/preview';
 import type { Item } from '../src/types';
-import { Button, Field, Heading, ItemImage, Loading, Screen, T } from '../src/ui';
+import { Button, Field, Heading, headerSide, ItemImage, Loading, Screen, T } from '../src/ui';
 
 export default function Wish() {
   const { list, item } = useLocalSearchParams<{ list: string; item?: string }>();
@@ -56,7 +56,7 @@ function WishForm({ listId, itemId, initial }: { listId: string; itemId?: string
 
   return (
     <Screen>
-      <Stack.Screen options={{ headerLeft: () => <Button small variant="quiet" label="Cancel" onPress={() => router.back()} /> }} />
+      <Stack.Screen options={headerSide('left', <Button small variant="quiet" label="Cancel" onPress={() => router.back()} />)} />
       <Heading
         eyebrow={itemId ? 'a little change' : 'something lovely'}
         title={itemId ? 'Edit wish' : 'Add a wish'}

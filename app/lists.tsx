@@ -7,7 +7,7 @@ import { countdown } from '../src/format';
 import { ChevronIcon, PersonIcon } from '../src/icons';
 import { useTheme } from '../src/theme';
 import type { ListDoc } from '../src/types';
-import { Button, Card, DateField, Field, Heading, IconButton, Loading, Screen, T } from '../src/ui';
+import { Button, Card, DateField, Field, Heading, headerSide, IconButton, Loading, Screen, T } from '../src/ui';
 
 export default function Lists() {
   const t = useTheme();
@@ -36,13 +36,12 @@ export default function Lists() {
   return (
     <Screen>
       <Stack.Screen
-        options={{
-          headerRight: () => (
-            <IconButton label="Settings" onPress={() => router.push('/settings')}>
-              <PersonIcon color={t.primary} />
-            </IconButton>
-          ),
-        }}
+        options={headerSide(
+          'right',
+          <IconButton label="Settings" onPress={() => router.push('/settings')}>
+            <PersonIcon color={t.primary} />
+          </IconButton>,
+        )}
       />
       <Heading eyebrow="your wishlists" title="My lists" />
       {lists.map((l) => (
