@@ -1,8 +1,9 @@
-import { Redirect, router } from 'expo-router';
+import { Redirect } from 'expo-router';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { deleteAccount } from '../src/account';
 import { useUser } from '../src/auth';
+import { goHome } from '../src/nav';
 import { Button, Card, Field, Heading, Loading, Screen, T } from '../src/ui';
 
 export default function Settings() {
@@ -18,7 +19,7 @@ export default function Settings() {
     setBusy(true);
     try {
       await deleteAccount(user, password);
-      router.replace('/');
+      goHome();
     } catch (e) {
       setError((e as Error).message);
       setBusy(false);

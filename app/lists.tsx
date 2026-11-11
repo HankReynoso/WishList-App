@@ -4,6 +4,7 @@ import { Pressable, View } from 'react-native';
 import { ownerSignOut, useUser } from '../src/auth';
 import { createList, useCollectionData } from '../src/data';
 import { countdown } from '../src/format';
+import { goHome } from '../src/nav';
 import { ChevronIcon, PersonIcon } from '../src/icons';
 import { useTheme } from '../src/theme';
 import type { ListDoc } from '../src/types';
@@ -69,7 +70,7 @@ export default function Lists() {
         label="Sign out"
         onPress={async () => {
           await ownerSignOut();
-          router.replace('/');
+          goHome();
         }}
       />
     </Screen>

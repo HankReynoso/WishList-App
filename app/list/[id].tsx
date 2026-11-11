@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Alert, Pressable, Share, Text, View } from 'react-native';
 import { deleteList, updateList, useCollectionData, useDocData } from '../../src/data';
 import { daysUntil, fromDateString } from '../../src/format';
+import { goLists } from '../../src/nav';
 import { PencilIcon } from '../../src/icons';
 import { fonts, useTheme } from '../../src/theme';
 import type { Item, ListDoc } from '../../src/types';
@@ -80,7 +81,7 @@ export default function OwnerList() {
         style: 'destructive',
         onPress: () =>
           deleteList(id, list.code)
-            .then(() => router.replace('/lists'))
+            .then(() => goLists())
             .catch((e: Error) => setListError(e.message)),
       },
     ]);

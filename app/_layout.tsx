@@ -6,10 +6,11 @@ import { Fraunces_500Medium } from '@expo-google-fonts/fraunces/500Medium';
 import { Fraunces_500Medium_Italic } from '@expo-google-fonts/fraunces/500Medium_Italic';
 import { Fraunces_600SemiBold } from '@expo-google-fonts/fraunces/600SemiBold';
 import { useFonts } from 'expo-font';
-import { router, SplashScreen, Stack } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Pressable, Text } from 'react-native';
+import { goHome } from '../src/nav';
 import { fonts, useTheme } from '../src/theme';
 import { headerSide } from '../src/ui';
 
@@ -18,7 +19,7 @@ SplashScreen.preventAutoHideAsync();
 function HomeButton() {
   const t = useTheme();
   return (
-    <Pressable onPress={() => router.replace('/')} hitSlop={12} accessibilityRole="button" accessibilityLabel="Home">
+    <Pressable onPress={goHome} hitSlop={12} accessibilityRole="button" accessibilityLabel="Home">
       <Text style={{ color: t.primary, fontFamily: fonts.medium, fontSize: 15 }}>Home</Text>
     </Pressable>
   );
