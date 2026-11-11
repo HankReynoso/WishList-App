@@ -5,7 +5,8 @@ export type ListDoc = {
   code: string;
   guestCount: number;
 };
-export type Item = { name: string; links: string[] };
+// image is an https URL read from the first link's page when the item was saved.
+export type Item = { name: string; links: string[]; image?: string };
 export type Claim = { guestId: string; guestName: string };
 export type Guest = { name: string };
 export type WithId<T> = T & { id: string };

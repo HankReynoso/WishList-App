@@ -30,13 +30,15 @@
         {
           "image": "./assets/splash.png",
           "imageWidth": 200,
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#F1F3EC",
           "dark": {
             "image": "./assets/splash-dark.png",
-            "backgroundColor": "#0b0d12"
+            "backgroundColor": "#121814"
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-image"
     ],
     "icon": "./assets/icon.png",
     "extra": {

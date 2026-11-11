@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 import { deleteAccount } from '../src/account';
 import { useUser } from '../src/auth';
-import { Button, Field, Screen, T } from '../src/ui';
+import { Button, Card, Field, Heading, Loading, Screen, T } from '../src/ui';
 
 export default function Settings() {
   const { user, ready } = useUser();
@@ -11,7 +11,7 @@ export default function Settings() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  if (!ready) return null;
+  if (!ready) return <Loading />;
   if (!user || user.isAnonymous) return <Redirect href="/" />;
 
   const run = async () => {
@@ -40,12 +40,14 @@ export default function Settings() {
 
   return (
     <Screen>
-      <T kind="name">{user.email}</T>
-      <T kind="title">Delete account</T>
-      <T kind="sub">Enter your password to confirm. This deletes every list you own, then your account.</T>
-      <Field placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
-      {error ? <T kind="sub">{error}</T> : null}
-      <Button danger label={busy ? 'Deleting...' : 'Delete account'} onPress={busy ? () => {} : confirm} />
+      <Heading eyebrow="signed in as" title="Settings" sub={user.email ?? undefined} />
+      <Card>
+        <T kind="name">Delete account</T>
+        <T kind="sub">Enter your password to confirm. This deletes every list you own, then your account.</T>
+        <Field placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
+        {error ? <T kind="error">{error}</T> : null}
+        <Button variant="danger" busy={busy} label={busy ? 'Deleting...' : 'Delete account'} onPress={confirm} />
+      </Card>
     </Screen>
   );
 }

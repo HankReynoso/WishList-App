@@ -26,9 +26,11 @@ service cloud.firestore {
     }
     function validItem() {
       let d = request.resource.data;
-      return d.keys().hasOnly(['name', 'links'])
+      return d.keys().hasOnly(['name', 'links', 'image'])
         && d.name is string && d.name.size() > 0 && d.name.size() <= 200
-        && d.links is list && d.links.size() > 0 && d.links.size() <= 20;
+        && d.links is list && d.links.size() > 0 && d.links.size() <= 20
+        && (!('image' in d)
+          || (d.image is string && d.image.size() <= 2048 && d.image.matches('https://.+')));
     }
 
     match /lists/{listId} {

@@ -16,7 +16,8 @@
 <ul>
 <li><strong>Owners</strong> sign up with an email address and a password. They are handled by Firebase Authentication. We do not see your password.</li>
 <li><strong>Guests</strong> give a display name and receive an anonymous Firebase ID. No email or account is needed.</li>
-<li><strong>List data</strong> is stored in Cloud Firestore: list titles, optional dates, invite codes, items (a name and links), guest display names, and which guest claimed which item.</li>
+<li><strong>List data</strong> is stored in Cloud Firestore: list titles, optional dates, invite codes, items (a name, links and a product image address), guest display names, and which guest claimed which item.</li>
+<li><strong>Product pictures.</strong> When an owner saves an item, their device loads the first link's page to find its picture. Anyone viewing the list then loads that picture straight from the shop's servers, which can see the device's IP address, as with any web page.</li>
 <li><strong>On your device</strong> the app keeps your sign-in session and, for guests, a local list of the lists you joined (list id, title and your name).</li>
 </ul>
 

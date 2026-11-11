@@ -3,8 +3,9 @@ import { Resvg } from '@resvg/resvg-js';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { deflateSync, crc32 } from 'node:zlib';
 
-const INDIGO = '#4f46e5';
-const TEAL = '#2dd4bf';
+const GREEN = '#24352B';
+const SAGE = '#A9C4AE';
+const OAT = '#F1F3EC';
 const SIZE = 1024;
 
 // Gift box on a 100x100 grid. The ribbon is a gap between solid shapes, so the
@@ -68,13 +69,13 @@ function rgbPng(rgba, w, h) {
 mkdirSync('assets', { recursive: true });
 const out = (name, buf) => writeFileSync(`assets/${name}`, buf);
 
-const opaque = render(svg(mark(INDIGO), { bg: '#ffffff' }));
+const opaque = render(svg(mark(GREEN), { bg: OAT }));
 out('icon.png', rgbPng(opaque.pixels, SIZE, SIZE));
 // Android masks the foreground to the inner 66%, so the mark is smaller here.
-out('adaptive-foreground.png', render(svg(mark(INDIGO), { scale: 5.4 })).asPng());
+out('adaptive-foreground.png', render(svg(mark(GREEN), { scale: 5.4 })).asPng());
 out('adaptive-monochrome.png', render(svg(mark('#000000'), { scale: 5.4 })).asPng());
-const bg = render(svg('', { bg: '#ffffff' }));
+const bg = render(svg('', { bg: OAT }));
 out('adaptive-background.png', rgbPng(bg.pixels, SIZE, SIZE));
-out('splash.png', render(svg(mark(INDIGO), { scale: 8 })).asPng());
-out('splash-dark.png', render(svg(mark(TEAL), { scale: 8 })).asPng());
+out('splash.png', render(svg(mark(GREEN), { scale: 8 })).asPng());
+out('splash-dark.png', render(svg(mark(SAGE), { scale: 8 })).asPng());
 console.log('wrote assets/*.png');

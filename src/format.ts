@@ -5,14 +5,26 @@ export const toDateString = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() 
 
 export const fromDateString = (s: string) => new Date(`${s}T00:00:00`);
 
-export function countdown(date: string): string {
+export function daysUntil(date: string): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const days = Math.round((new Date(`${date}T00:00:00`).getTime() - today.getTime()) / 864e5);
+  return Math.round((fromDateString(date).getTime() - today.getTime()) / 864e5);
+}
+
+export function countdown(date: string): string {
+  const days = daysUntil(date);
   if (days > 1) return `${days} days to go`;
   if (days === 1) return 'Tomorrow';
   if (days === 0) return 'Today';
   return 'Date has passed';
+}
+
+export function domain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
 }
 
 export const normalizeUrl = (raw: string) => (/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);

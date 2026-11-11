@@ -1,7 +1,7 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import { ownerSignIn, sendReset, useUser } from '../src/auth';
-import { Button, Chip, Field, Screen, T } from '../src/ui';
+import { Button, Card, Field, Heading, Loading, Screen, T } from '../src/ui';
 
 export default function Home() {
   const { user, ready } = useUser();
@@ -10,7 +10,7 @@ export default function Home() {
   const [create, setCreate] = useState(false);
   const [error, setError] = useState('');
 
-  if (!ready) return null;
+  if (!ready) return <Loading />;
   if (user && !user.isAnonymous) return <Redirect href="/lists" />;
 
   const submit = () => ownerSignIn(email.trim(), password, create).catch((e: Error) => setError(e.message));
@@ -27,16 +27,23 @@ export default function Home() {
 
   return (
     <Screen>
-      <T kind="title">Gift-Wrapped</T>
-      <T kind="sub">Owners sign in to build lists. Guests join with an invite code.</T>
-      <Field placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} />
+      <Heading
+        eyebrow="for the list makers"
+        title={create ? 'Make your account' : 'Welcome back'}
+        sub="Build wishlists and invite guests with a code. Their claims stay a surprise."
+      />
+      <Field placeholder="Email" keyboardType="email-address" autoComplete="email" value={email} onChangeText={setEmail} />
       <Field placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
       {error ? <T kind="sub">{error}</T> : null}
-      {create ? null : <Chip label="Forgot password?" onPress={forgot} />}
-      <Button label={create ? 'Create owner account' : 'Sign in'} onPress={submit} />
-      <Button label={create ? 'I already have an account' : 'New owner? Create an account'} onPress={() => setCreate(!create)} />
-      <Button label="Join with a code" onPress={() => router.push('/join')} />
-      <Button label="My joined lists" onPress={() => router.push('/joined')} />
+      <Button label={create ? 'Create account' : 'Sign in'} onPress={submit} />
+      {create ? null : <Button variant="quiet" label="Forgot password?" onPress={forgot} />}
+      <Button variant="quiet" label={create ? 'I already have an account' : 'New here? Create an account'} onPress={() => setCreate(!create)} />
+      <Card style={{ marginTop: 12 }}>
+        <T kind="name">Invited to a list?</T>
+        <T kind="sub">No account needed. Join with the code you were sent.</T>
+        <Button label="Join with a code" onPress={() => router.push('/join')} />
+        <Button variant="outline" label="My joined lists" onPress={() => router.push('/joined')} />
+      </Card>
     </Screen>
   );
 }
