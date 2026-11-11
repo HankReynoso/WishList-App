@@ -6,26 +6,28 @@ import { Fraunces_500Medium } from '@expo-google-fonts/fraunces/500Medium';
 import { Fraunces_500Medium_Italic } from '@expo-google-fonts/fraunces/500Medium_Italic';
 import { Fraunces_600SemiBold } from '@expo-google-fonts/fraunces/600SemiBold';
 import { useFonts } from 'expo-font';
-import { router, SplashScreen, Stack } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Pressable, Text } from 'react-native';
+import { t } from '../src/i18n';
+import { goHome } from '../src/nav';
 import { fonts, useTheme } from '../src/theme';
 import { headerSide } from '../src/ui';
 
 SplashScreen.preventAutoHideAsync();
 
 function HomeButton() {
-  const t = useTheme();
+  const th = useTheme();
   return (
-    <Pressable onPress={() => router.replace('/')} hitSlop={12} accessibilityRole="button" accessibilityLabel="Home">
-      <Text style={{ color: t.primary, fontFamily: fonts.medium, fontSize: 15 }}>Home</Text>
+    <Pressable onPress={goHome} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('home')}>
+      <Text style={{ color: th.primary, fontFamily: fonts.medium, fontSize: 15 }}>{t('home')}</Text>
     </Pressable>
   );
 }
 
 export default function Root() {
-  const t = useTheme();
+  const th = useTheme();
   const [loaded, error] = useFonts({
     Fraunces_500Medium,
     Fraunces_500Medium_Italic,
@@ -46,14 +48,14 @@ export default function Root() {
       <StatusBar style="auto" />
       <Stack
         screenOptions={{
-          title: 'Gift-Wrapped',
-          headerStyle: { backgroundColor: t.bg },
-          headerTintColor: t.primary,
-          headerTitleStyle: { fontFamily: fonts.italic, fontSize: 17, color: t.primary },
+          title: t('appName'),
+          headerStyle: { backgroundColor: th.bg },
+          headerTintColor: th.primary,
+          headerTitleStyle: { fontFamily: fonts.italic, fontSize: 17, color: th.primary },
           headerShadowVisible: false,
           headerTitleAlign: 'center',
           headerBackButtonDisplayMode: 'minimal',
-          contentStyle: { backgroundColor: t.bg },
+          contentStyle: { backgroundColor: th.bg },
         }}
       >
         <Stack.Screen name="lists" options={{ headerBackVisible: false }} />

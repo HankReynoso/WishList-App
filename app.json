@@ -6,11 +6,16 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "locales": {
+      "es": "./locales/es.json"
+    },
     "ios": {
       "bundleIdentifier": "com.hankreynoso.giftwrapped",
       "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDevelopmentRegion": "en",
+        "CFBundleAllowMixedLocalizations": true
       }
     },
     "android": {
@@ -38,7 +43,8 @@
         }
       ],
       "expo-font",
-      "expo-image"
+      "expo-image",
+      ["expo-localization", { "supportedLocales": ["en", "es"] }]
     ],
     "icon": "./assets/icon.png",
     "extra": {

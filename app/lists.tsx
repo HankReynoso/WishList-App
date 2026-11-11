@@ -2,15 +2,18 @@ import { Redirect, router, Stack } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { ownerSignOut, useUser } from '../src/auth';
+import { errorMessage } from '../src/errors';
 import { createList, useCollectionData } from '../src/data';
 import { countdown } from '../src/format';
+import { goHome } from '../src/nav';
+import { t } from '../src/i18n';
 import { ChevronIcon, PersonIcon } from '../src/icons';
 import { useTheme } from '../src/theme';
 import type { ListDoc } from '../src/types';
 import { Button, Card, DateField, Field, Heading, headerSide, IconButton, Loading, Screen, T } from '../src/ui';
 
 export default function Lists() {
-  const t = useTheme();
+  const th = useTheme();
   const { user, ready } = useUser();
   const lists = useCollectionData<ListDoc>(user ? 'lists' : null, user?.uid);
   const [title, setTitle] = useState('');
@@ -21,7 +24,7 @@ export default function Lists() {
   if (!user || user.isAnonymous) return <Redirect href="/" />;
 
   const add = async () => {
-    if (!title.trim()) return setError('Give the list a title.');
+    if (!title.trim()) return setError(t('giveTitle'));
     try {
       const id = await createList(user.uid, title.trim(), date || undefined);
       setTitle('');
@@ -29,7 +32,7 @@ export default function Lists() {
       setError('');
       router.push(`/list/${id}`);
     } catch (e) {
-      setError((e as Error).message);
+      setError(errorMessage(e, 'createListFailed'));
     }
   };
 
@@ -38,38 +41,38 @@ export default function Lists() {
       <Stack.Screen
         options={headerSide(
           'right',
-          <IconButton label="Settings" onPress={() => router.push('/settings')}>
-            <PersonIcon color={t.primary} />
+          <IconButton label={t('settings')} onPress={() => router.push('/settings')}>
+            <PersonIcon color={th.primary} />
           </IconButton>,
         )}
       />
-      <Heading eyebrow="your wishlists" title="My lists" />
+      <Heading eyebrow={t('listsEyebrow')} title={t('myLists')} />
       {lists.map((l) => (
         <Pressable key={l.id} onPress={() => router.push(`/list/${l.id}`)} accessibilityRole="button">
           <Card style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 18 }}>
             <View style={{ flex: 1, gap: 3 }}>
               <T kind="name">{l.title}</T>
               <T kind="sub">
-                {l.date ? countdown(l.date) : 'No date'} · {l.guestCount} {l.guestCount === 1 ? 'guest' : 'guests'}
+                {l.date ? countdown(l.date) : t('noDate')} · {t('guestCount', { count: l.guestCount })}
               </T>
             </View>
-            <ChevronIcon color={t.sub} />
+            <ChevronIcon color={th.sub} />
           </Card>
         </Pressable>
       ))}
       <Card style={{ marginTop: 8 }}>
-        <T kind="name">Start a new list</T>
-        <Field placeholder="Title, like Maya's birthday" autoCapitalize="sentences" value={title} onChangeText={setTitle} />
+        <T kind="name">{t('startList')}</T>
+        <Field placeholder={t('listTitlePlaceholder')} autoCapitalize="sentences" value={title} onChangeText={setTitle} />
         <DateField value={date} onChange={setDate} />
         {error ? <T kind="error">{error}</T> : null}
-        <Button label="Create list" onPress={add} />
+        <Button label={t('createList')} onPress={add} />
       </Card>
       <Button
         variant="quiet"
-        label="Sign out"
+        label={t('signOut')}
         onPress={async () => {
           await ownerSignOut();
-          router.replace('/');
+          goHome();
         }}
       />
     </Screen>

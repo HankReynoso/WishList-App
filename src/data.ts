@@ -15,7 +15,9 @@ import {
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { ensureGuest } from './auth';
+import { AppError } from './errors';
 import { db } from './firebase';
+import { t } from './i18n';
 import { rememberJoined } from './joined';
 import type { Guest, Item, ListDoc, WithId } from './types';
 
@@ -38,7 +40,7 @@ export async function createList(ownerId: string, title: string, date?: string) 
       // a code collision fails the batch, so retry with a fresh code
     }
   }
-  throw new Error('Could not create the list. Try again.');
+  throw new AppError(t('createListFailed'));
 }
 
 // Firestore rejects undefined fields, so an item without an image omits the key.
@@ -78,7 +80,7 @@ export async function deleteList(listId: string, code: string) {
 export async function joinList(code: string, name: string): Promise<string> {
   const user = await ensureGuest();
   const found = await getDoc(doc(db, 'codes', code.trim().toUpperCase()));
-  if (!found.exists()) throw new Error('No list matches that code.');
+  if (!found.exists()) throw new AppError(t('noListForCode'));
   const listId = (found.data() as { listId: string }).listId;
   const guestRef = doc(db, 'lists', listId, 'guests', user.uid);
   const existing = await getDoc(guestRef);

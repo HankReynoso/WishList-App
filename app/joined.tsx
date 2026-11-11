@@ -2,12 +2,13 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { stillJoined, useJoined } from '../src/joined';
+import { t } from '../src/i18n';
 import { ChevronIcon } from '../src/icons';
 import { useTheme } from '../src/theme';
 import { Button, Card, Heading, Loading, Screen, T } from '../src/ui';
 
 export default function JoinedLists() {
-  const t = useTheme();
+  const th = useTheme();
   const { items, status, remove } = useJoined();
   const [error, setError] = useState('');
 
@@ -15,9 +16,9 @@ export default function JoinedLists() {
     setError('');
     try {
       if (await stillJoined(listId)) router.push(`/guest/${listId}`);
-      else setError('This device is no longer signed in as that guest. Join again with the invite code.');
+      else setError(t('signedOutGuest'));
     } catch {
-      setError('Could not open the list. Check your connection and try again.');
+      setError(t('openListFailed'));
     }
   };
 
@@ -25,11 +26,11 @@ export default function JoinedLists() {
 
   return (
     <Screen>
-      <Heading eyebrow="lists you've joined" title="Joined lists" />
+      <Heading eyebrow={t('joinedEyebrow')} title={t('joinedTitle')} />
       {items.length === 0 ? (
         <Card>
-          <T kind="sub">Lists you join show up here.</T>
-          <Button label="Join with a code" onPress={() => router.push('/join')} />
+          <T kind="sub">{t('joinedEmpty')}</T>
+          <Button label={t('joinWithCode')} onPress={() => router.push('/join')} />
         </Card>
       ) : null}
       {error ? <T kind="error">{error}</T> : null}
@@ -45,11 +46,11 @@ export default function JoinedLists() {
             >
               <View style={{ flex: 1, gap: 3 }}>
                 <T kind="name">{j.title}</T>
-                <T kind="sub">{gone ? 'This list is no longer available.' : `Joined as ${j.name}`}</T>
+                <T kind="sub">{gone ? t('listGone') : t('joinedAs', { name: j.name })}</T>
               </View>
-              {gone ? null : <ChevronIcon color={t.sub} />}
+              {gone ? null : <ChevronIcon color={th.sub} />}
             </Pressable>
-            <Button small variant="dangerOutline" label={gone ? 'Remove' : 'Leave'} onPress={() => remove(j.listId)} />
+            <Button small variant="dangerOutline" label={gone ? t('remove') : t('leave')} onPress={() => remove(j.listId)} />
           </Card>
         );
       })}

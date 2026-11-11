@@ -16,16 +16,17 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { domain, fromDateString, toDateString } from './format';
+import { domain, formatDate, fromDateString, toDateString } from './format';
+import { dateLocale, t } from './i18n';
 import { GiftIcon } from './icons';
 import { tintFor } from './palette';
 import { fonts, useTheme } from './theme';
 
 export function Screen({ children, footer }: { children: ReactNode; footer?: ReactNode }) {
-  const t = useTheme();
+  const th = useTheme();
   const insets = useSafeAreaInsets();
   return (
-    <View style={{ flex: 1, backgroundColor: t.bg }}>
+    <View style={{ flex: 1, backgroundColor: th.bg }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ padding: 20, paddingBottom: footer ? 24 : 120, gap: 12 }}
@@ -41,14 +42,14 @@ export function Screen({ children, footer }: { children: ReactNode; footer?: Rea
 }
 
 export function Heading({ eyebrow, title, sub }: { eyebrow?: string; title: string; sub?: string }) {
-  const t = useTheme();
+  const th = useTheme();
   return (
     <View style={{ paddingTop: 4, paddingBottom: 4 }}>
-      {eyebrow ? <Text style={{ fontFamily: fonts.italic, fontSize: 15, color: t.sub }}>{eyebrow}</Text> : null}
-      <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 36, color: t.text, marginTop: 2 }}>
+      {eyebrow ? <Text style={{ fontFamily: fonts.italic, fontSize: 15, color: th.sub }}>{eyebrow}</Text> : null}
+      <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 36, color: th.text, marginTop: 2 }}>
         {title}
       </Text>
-      {sub ? <Text style={{ fontFamily: fonts.body, fontSize: 13, lineHeight: 18, color: t.sub, marginTop: 8 }}>{sub}</Text> : null}
+      {sub ? <Text style={{ fontFamily: fonts.body, fontSize: 13, lineHeight: 18, color: th.sub, marginTop: 8 }}>{sub}</Text> : null}
     </View>
   );
 }
@@ -56,12 +57,12 @@ export function Heading({ eyebrow, title, sub }: { eyebrow?: string; title: stri
 type Kind = 'name' | 'body' | 'sub' | 'error';
 
 export function T({ kind = 'body', children }: { kind?: Kind; children: ReactNode }) {
-  const t = useTheme();
+  const th = useTheme();
   const style = {
-    name: { fontFamily: fonts.name, fontSize: 17, lineHeight: 21, color: t.text },
-    body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: t.text },
-    sub: { fontFamily: fonts.body, fontSize: 13, lineHeight: 18, color: t.sub },
-    error: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, color: t.danger },
+    name: { fontFamily: fonts.name, fontSize: 17, lineHeight: 21, color: th.text },
+    body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: th.text },
+    sub: { fontFamily: fonts.body, fontSize: 13, lineHeight: 18, color: th.sub },
+    error: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, color: th.danger },
   }[kind];
   return (
     <Text style={style} accessibilityLiveRegion={kind === 'error' ? 'polite' : undefined}>
@@ -71,8 +72,8 @@ export function T({ kind = 'body', children }: { kind?: Kind; children: ReactNod
 }
 
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
-  const t = useTheme();
-  return <View style={[{ backgroundColor: t.card, borderRadius: 22, padding: 16, gap: 10 }, style]}>{children}</View>;
+  const th = useTheme();
+  return <View style={[{ backgroundColor: th.card, borderRadius: 22, padding: 16, gap: 10 }, style]}>{children}</View>;
 }
 
 type Variant = 'primary' | 'outline' | 'quiet' | 'danger' | 'dangerOutline';
@@ -90,13 +91,13 @@ export function Button({
   small?: boolean;
   busy?: boolean;
 }) {
-  const t = useTheme();
+  const th = useTheme();
   const look = {
-    primary: { bg: t.primary, fg: t.onPrimary, border: t.primary },
-    outline: { bg: 'transparent', fg: t.primary, border: t.primary },
-    quiet: { bg: 'transparent', fg: t.primary, border: 'transparent' },
-    danger: { bg: t.danger, fg: t.onDanger, border: t.danger },
-    dangerOutline: { bg: 'transparent', fg: t.danger, border: t.danger },
+    primary: { bg: th.primary, fg: th.onPrimary, border: th.primary },
+    outline: { bg: 'transparent', fg: th.primary, border: th.primary },
+    quiet: { bg: 'transparent', fg: th.primary, border: 'transparent' },
+    danger: { bg: th.danger, fg: th.onDanger, border: th.danger },
+    dangerOutline: { bg: 'transparent', fg: th.danger, border: th.danger },
   }[variant];
   const height = small ? 44 : 52;
   return (
@@ -124,7 +125,7 @@ export function Button({
 }
 
 export function IconButton({ label, onPress, children }: { label: string; onPress: () => void; children: ReactNode }) {
-  const t = useTheme();
+  const th = useTheme();
   return (
     <Pressable
       onPress={onPress}
@@ -135,7 +136,7 @@ export function IconButton({ label, onPress, children }: { label: string; onPres
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: t.soft,
+        backgroundColor: th.soft,
         alignItems: 'center',
         justifyContent: 'center',
         opacity: pressed ? 0.7 : 1,
@@ -147,18 +148,18 @@ export function IconButton({ label, onPress, children }: { label: string; onPres
 }
 
 export function Field(props: TextInputProps) {
-  const t = useTheme();
+  const th = useTheme();
   return (
     <TextInput
-      placeholderTextColor={t.sub}
+      placeholderTextColor={th.sub}
       autoCapitalize="none"
       returnKeyType="done"
       {...props}
       style={[
         {
-          backgroundColor: t.card,
-          color: t.text,
-          borderColor: t.hairline,
+          backgroundColor: th.card,
+          color: th.text,
+          borderColor: th.hairline,
           borderWidth: 1,
           borderRadius: 16,
           paddingHorizontal: 16,
@@ -175,7 +176,7 @@ export function Field(props: TextInputProps) {
 }
 
 export function DateField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const t = useTheme();
+  const th = useTheme();
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const [open, setOpen] = useState(false);
   return (
@@ -188,20 +189,20 @@ export function DateField({ value, onChange }: { value: string; onChange: (v: st
             flex: 1,
             minHeight: 52,
             justifyContent: 'center',
-            backgroundColor: t.card,
-            borderColor: t.hairline,
+            backgroundColor: th.card,
+            borderColor: th.hairline,
             borderWidth: 1,
             borderRadius: 16,
             paddingHorizontal: 16,
           }}
         >
-          <Text style={{ color: value ? t.text : t.sub, fontFamily: fonts.body, fontSize: 15 }}>{value || 'Date, optional'}</Text>
+          <Text style={{ color: value ? th.text : th.sub, fontFamily: fonts.body, fontSize: 15 }}>{value ? formatDate(value, { year: 'numeric', month: 'short', day: 'numeric' }) : t('dateOptional')}</Text>
         </Pressable>
         {value ? (
           <Button
             small
             variant="quiet"
-            label="Clear"
+            label={t('clear')}
             onPress={() => {
               setOpen(false);
               onChange('');
@@ -212,9 +213,10 @@ export function DateField({ value, onChange }: { value: string; onChange: (v: st
       {open ? (
         <DateTimePicker
           mode="date"
+          locale={dateLocale}
           display={Platform.OS === 'ios' ? 'inline' : 'default'}
           themeVariant={scheme}
-          accentColor={t.primary}
+          accentColor={th.primary}
           value={value ? fromDateString(value) : new Date()}
           onChange={(e, d) => {
             if (Platform.OS !== 'ios') setOpen(false);
@@ -229,12 +231,12 @@ export function DateField({ value, onChange }: { value: string; onChange: (v: st
 // The tinted tile shows until the image loads, and stays when there is no
 // image or it fails, so a dead store CDN never leaves a blank hole.
 export function ItemImage({ id, uri, style }: { id: string; uri?: string; style: StyleProp<ViewStyle> }) {
-  const t = useTheme();
+  const th = useTheme();
   const [failed, setFailed] = useState<string | null>(null);
   const show = uri && failed !== uri;
   return (
-    <View style={[{ backgroundColor: tintFor(id, t.tints), alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, style]}>
-      <GiftIcon color={t.sub} size={22} />
+    <View style={[{ backgroundColor: tintFor(id, th.tints), alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, style]}>
+      <GiftIcon color={th.sub} size={22} />
       {show ? (
         <Image
           source={{ uri }}
@@ -250,9 +252,9 @@ export function ItemImage({ id, uri, style }: { id: string; uri?: string; style:
 }
 
 export function GiftTag({ label, mine }: { label: string; mine?: boolean }) {
-  const t = useTheme();
-  const bg = mine ? t.primary : t.tagBg;
-  const fg = mine ? t.onPrimary : t.tagText;
+  const th = useTheme();
+  const bg = mine ? th.primary : th.tagBg;
+  const fg = mine ? th.onPrimary : th.tagText;
   return (
     <View
       style={{
@@ -279,12 +281,12 @@ export function GiftTag({ label, mine }: { label: string; mine?: boolean }) {
 }
 
 export function LinkDomains({ links }: { links: string[] }) {
-  const t = useTheme();
+  const th = useTheme();
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 3 }}>
       {links.map((u, i) => (
-        <Pressable key={u} onPress={() => Linking.openURL(u)} hitSlop={8} accessibilityRole="link" accessibilityLabel={`Open ${domain(u)}`}>
-          <Text style={{ fontFamily: fonts.body, fontSize: 12, lineHeight: 18, color: t.sub }}>
+        <Pressable key={u} onPress={() => Linking.openURL(u)} hitSlop={8} accessibilityRole="link" accessibilityLabel={t('openDomain', { domain: domain(u) })}>
+          <Text style={{ fontFamily: fonts.body, fontSize: 12, lineHeight: 18, color: th.sub }}>
             {i > 0 ? ' · ' : ''}
             <Text style={{ textDecorationLine: 'underline' }}>{domain(u)}</Text>
           </Text>
@@ -304,10 +306,10 @@ export function headerSide(side: 'left' | 'right', element: ReactElement) {
 }
 
 export function Loading() {
-  const t = useTheme();
+  const th = useTheme();
   return (
-    <View style={{ flex: 1, backgroundColor: t.bg, alignItems: 'center', justifyContent: 'center' }}>
-      <ActivityIndicator color={t.primary} />
+    <View style={{ flex: 1, backgroundColor: th.bg, alignItems: 'center', justifyContent: 'center' }}>
+      <ActivityIndicator color={th.primary} />
     </View>
   );
 }
