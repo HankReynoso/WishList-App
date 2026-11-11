@@ -46,3 +46,7 @@ Joining as a guest signs out an owner session on that device, since an owner ses
 
 `npm run test:rules` starts the Firestore emulator (needs Java 21+) and runs `tests/rules.test.ts`.
 `npm run typecheck` runs `tsc --noEmit`.
+
+## Languages
+
+The app follows the phone language: Spanish for any `es` locale, English otherwise. Strings live in `src/i18n.ts`, where `en` is the source of truth and `es` must have the same keys, or the typecheck fails. The native app name per language is in `locales/`. The support and privacy pages have Spanish copies in `docs/es/`.
