@@ -2,7 +2,9 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { addItem, deleteItem, updateItem, useDocData } from '../src/data';
+import { errorMessage } from '../src/errors';
 import { parseLinks } from '../src/format';
+import { t } from '../src/i18n';
 import { fetchPreviewImage } from '../src/preview';
 import type { Item } from '../src/types';
 import { Button, Field, Heading, headerSide, ItemImage, Loading, Screen, T } from '../src/ui';
@@ -22,7 +24,7 @@ function WishForm({ listId, itemId, initial }: { listId: string; itemId?: string
 
   const save = async () => {
     const parsed = parseLinks(links);
-    if (!name.trim() || parsed.length === 0) return setError('Add a name and at least one link.');
+    if (!name.trim() || parsed.length === 0) return setError(t('needNameAndLink'));
     setError('');
     const keep = initial?.image && initial.links[0] === parsed[0] ? initial.image : undefined;
     let image = keep;
@@ -36,42 +38,42 @@ function WishForm({ listId, itemId, initial }: { listId: string; itemId?: string
       await (itemId ? updateItem(listId, itemId, next) : addItem(listId, next));
       router.back();
     } catch (e) {
-      setError((e as Error).message);
+      setError(errorMessage(e));
       setStatus('idle');
     }
   };
 
   const confirmDelete = () =>
-    Alert.alert('Delete wish?', `"${initial?.name}" will be removed for you and your guests.`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('deleteWishTitle'), t('deleteWishBody', { name: initial?.name ?? '' }), [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('delete'),
         style: 'destructive',
         onPress: () =>
           deleteItem(listId, itemId!)
             .then(() => router.back())
-            .catch((e: Error) => setError(e.message)),
+            .catch((e) => setError(errorMessage(e))),
       },
     ]);
 
   return (
     <Screen>
-      <Stack.Screen options={headerSide('left', <Button small variant="quiet" label="Cancel" onPress={() => router.back()} />)} />
+      <Stack.Screen options={headerSide('left', <Button small variant="quiet" label={t('cancel')} onPress={() => router.back()} />)} />
       <Heading
-        eyebrow={itemId ? 'a little change' : 'something lovely'}
-        title={itemId ? 'Edit wish' : 'Add a wish'}
-        sub="Paste a link from any shop. We'll look for a picture on the first one."
+        eyebrow={itemId ? t('wishEyebrowEdit') : t('wishEyebrowNew')}
+        title={itemId ? t('editWish') : t('addWish')}
+        sub={t('wishSub')}
       />
       {itemId && initial ? <ItemImage id={itemId} uri={initial.image} style={{ height: 160, borderRadius: 22 }} /> : null}
-      <Field placeholder="What is it?" autoCapitalize="sentences" value={name} onChangeText={setName} />
-      <Field placeholder="Links, one per line" multiline keyboardType="url" value={links} onChangeText={setLinks} />
+      <Field placeholder={t('wishNamePlaceholder')} autoCapitalize="sentences" value={name} onChangeText={setName} />
+      <Field placeholder={t('linksPlaceholder')} multiline keyboardType="url" value={links} onChangeText={setLinks} />
       {error ? <T kind="error">{error}</T> : null}
       <Button
         busy={status !== 'idle'}
-        label={status === 'finding' ? 'Finding a picture...' : status === 'saving' ? 'Saving...' : itemId ? 'Save wish' : 'Add wish'}
+        label={status === 'finding' ? t('findingPicture') : status === 'saving' ? t('saving') : itemId ? t('saveWish') : t('addWish')}
         onPress={save}
       />
-      {itemId ? <Button variant="dangerOutline" label="Delete wish" onPress={confirmDelete} /> : null}
+      {itemId ? <Button variant="dangerOutline" label={t('deleteWish')} onPress={confirmDelete} /> : null}
     </Screen>
   );
 }

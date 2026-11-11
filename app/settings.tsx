@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 import { deleteAccount } from '../src/account';
 import { useUser } from '../src/auth';
+import { errorMessage } from '../src/errors';
+import { t } from '../src/i18n';
 import { goHome } from '../src/nav';
 import { Button, Card, Field, Heading, Loading, Screen, T } from '../src/ui';
 
@@ -21,33 +23,33 @@ export default function Settings() {
       await deleteAccount(user, password);
       goHome();
     } catch (e) {
-      setError((e as Error).message);
+      setError(errorMessage(e));
       setBusy(false);
     }
   };
 
   const confirm = () => {
-    if (!password) return setError('Enter your password to confirm.');
+    if (!password) return setError(t('enterPasswordConfirm'));
     setError('');
     Alert.alert(
-      'Delete account?',
-      'All your lists and items are deleted and your account is removed. Guests lose access. This cannot be undone.',
+      t('deleteAccountTitle'),
+      t('deleteAccountBody'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete account', style: 'destructive', onPress: run },
+        { text: t('cancel'), style: 'cancel' },
+        { text: t('deleteAccount'), style: 'destructive', onPress: run },
       ],
     );
   };
 
   return (
     <Screen>
-      <Heading eyebrow="signed in as" title="Settings" sub={user.email ?? undefined} />
+      <Heading eyebrow={t('signedInAs')} title={t('settings')} sub={user.email ?? undefined} />
       <Card>
-        <T kind="name">Delete account</T>
-        <T kind="sub">Enter your password to confirm. This deletes every list you own, then your account.</T>
-        <Field placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
+        <T kind="name">{t('deleteAccount')}</T>
+        <T kind="sub">{t('deleteAccountSub')}</T>
+        <Field placeholder={t('password')} secureTextEntry value={password} onChangeText={setPassword} />
         {error ? <T kind="error">{error}</T> : null}
-        <Button variant="danger" busy={busy} label={busy ? 'Deleting...' : 'Delete account'} onPress={confirm} />
+        <Button variant="danger" busy={busy} label={busy ? t('deleting') : t('deleteAccount')} onPress={confirm} />
       </Card>
     </Screen>
   );
